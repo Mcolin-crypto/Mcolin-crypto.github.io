@@ -5,7 +5,7 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://example.com">
+  <link rel="dns-prefetch" href="https://mcolin-crypto.github.io">
   <title>Mcolin</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -32,7 +32,7 @@
   <meta name="description" content="Mcolin的个人博客">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mcolin">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="https://mcolin-crypto.github.io/index.html">
 <meta property="og:site_name" content="Mcolin">
 <meta property="og:description" content="Mcolin的个人博客">
 <meta property="og:locale" content="zh_CN">
@@ -231,7 +231,7 @@
             
 
   
-    <article id="post-Spring-源码-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-Java-源码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -239,7 +239,7 @@
   
     <h1 itemprop="name">
 	
-	  <a class="article-title" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/" target="_blank">Spring-源码(2)</a>
+	  <a class="article-title" href="/2025/05/22/Java-%E6%BA%90%E7%A0%81/" target="_blank">Java-Synchronized底层原理</a>
   
     </h1>
   
@@ -247,7 +247,7 @@
 
   
   
-<a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/" class="archive-article-date">
+<a href="/2025/05/22/Java-%E6%BA%90%E7%A0%81/" class="archive-article-date">
         <time datetime="2025-05-22T05:51:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-05-22</time>
 </a>
 
@@ -260,98 +260,50 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    
-    
+    <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文是针对Synchronized从源码分析底层实现原理。</p>
+<p>我们在使用多线程时难免会遇到线程不安全问题，一个很经典的例子就是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.cnt++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Counter</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Counter</span>();</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">thread1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">                counter.increment();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">thread2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">                counter.increment();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        thread1.start();</span><br><span class="line">        thread2.start();</span><br><span class="line"></span><br><span class="line">        thread1.join();</span><br><span class="line">        thread2.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;Final count: &quot;</span> + counter.cnt);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    
+<p>最后控制台输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Final count: <span class="number">13542</span></span><br></pre></td></tr></table></figure>
 
-    
+<p>线程1和线程2都调用了<code>counter.increment()</code>方法10000次，如果正常执行结果理应是20000，但是由于两个线程调用方法并不是同步的，二者可能会同时读取<code>count</code>的值，然后同时增加。因此最终计数器的结果是小于20000的。</p>
+<h2 id="二、synchronized"><a href="#二、synchronized" class="headerlink" title="二、synchronized"></a>二、synchronized</h2><p>对于前言中的例子，只需要添加一个<code>synchronized</code>关键字即可解决：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.cnt++;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-    
+<p>最后控制台输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Final count: <span class="number">20000</span></span><br></pre></td></tr></table></figure>
 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/">展开全文 >></a>
-    </p>
-    
+<p><code>synchronized</code>是Java中的关键字，是<strong>利用锁的机制来实现同步</strong>的，是解决多线程并发问题的一种最常用且比较简单的一种方法。它是Java的内置锁，其作用就是确保在同一时刻只有一个线程能够进入<code>synchronized</code>修饰的方法或代码块。</p>
+<h3 id="1）synchronized上锁的对象"><a href="#1）synchronized上锁的对象" class="headerlink" title="1）synchronized上锁的对象"></a>1）synchronized上锁的对象</h3><p><code>synchronized</code>用在普通方法上时，上锁的是执行这个方法的对象:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.cnt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
+<p><code>synchronized</code>用在静态方法上时，上锁的是这个类的class对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    cnt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
+<p><code>synchronized</code>用在代码块上，上锁的是括号中指定的对象（比如说this或者是类的class对象）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>同步代码块在开发中使用较多，因为相较于同步方法来说粒度更细也更加灵活。</p>
+<h3 id="2）synchronized底层实现原理"><a href="#2）synchronized底层实现原理" class="headerlink" title="2）synchronized底层实现原理"></a>2）synchronized底层实现原理</h3><p><code>synchronized</code>依赖JVM的内部Monitor对象来实现线程的同步。使用的时候不需要手动去lock以及unlock，JVM会自动加锁和解锁。</p>
+<p>当<code>synchronized</code>加锁代码块时:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>JVM会通过<code>monitorenter</code>、<code>monitorexit</code>两个指令来实现同步，使用<code>javap -c -v src/main/java/com/Counter.class</code>反编译代码块：</p>
+<p><img src="D:\Hexo\source\images\synchronized_monitor.png"></p>
+<p>可以看到两个指令：</p>
+<ul>
+<li><code>monitorenter</code>：表示线程正在尝试获取lock对象的Monitor。</li>
+<li><code>monitorexit</code>：表示线程执行完了同步代码块，正在释放锁。</li>
+</ul>
+<p>细心的你肯定可以发现这里只有一个<code>monitorenter</code>但是有两个<code>monitorexit</code>，当执行<code>monitorenter</code>指令的时候，当前线程将尝试获取<code>monitor</code>锁的持有权，如果获取到了，就把锁的计数器+1，当执行<code>monitorexit</code>的时候，锁计数器就减1，当锁计数器为0的时候，该锁就被释放了。因此其实很容易想到，这里两个exit指令主要就是为了确保即使方法异常结束后也能够释放锁。</p>
+<p>当<code>synchronized</code>加锁普通方法时:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.cnt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-  
-    <article id="post-Spring-源码-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-  
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" target="_blank">Spring 源码（一）</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" class="archive-article-date">
-        <time datetime="2025-05-22T02:57:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-05-22</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文是针对Springboot中run方法的启动流程的分析。</p>
-<p>下面是一个新建的Springboot项目，直接查看run方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpringdemoApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(SpringdemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、SpringApplication初始化"><a href="#二、SpringApplication初始化" class="headerlink" title="二、SpringApplication初始化"></a>二、SpringApplication初始化</h2><p>这里我们直接看多个主类的run()方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(Class&lt;?&gt;[] primarySources, String[] args)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">new</span> <span class="title class_">SpringApplication</span>(primarySources)).run(args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这个方法接受一个主类数组<code>primarySources</code>和命令行参数<code>args</code>，然后直接创建一个<code>SpringApplication</code>实例，并调用其run方法来启动Spring应用。</p>
-<p>这里先看看<code>SpringApplication</code>的构造函数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">SpringApplication</span><span class="params">(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.sources = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>();</span><br><span class="line">    <span class="built_in">this</span>.bannerMode = Mode.CONSOLE;</span><br><span class="line">    <span class="built_in">this</span>.logStartupInfo = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.addCommandLineProperties = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.addConversionService = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.headless = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.registerShutdownHook = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.additionalProfiles = Collections.emptySet();</span><br><span class="line">    <span class="built_in">this</span>.isCustomEnvironment = <span class="literal">false</span>;</span><br><span class="line">    <span class="built_in">this</span>.lazyInitialization = <span class="literal">false</span>;</span><br><span class="line">    <span class="built_in">this</span>.applicationContextFactory = ApplicationContextFactory.DEFAULT;</span><br><span class="line">    <span class="built_in">this</span>.applicationStartup = ApplicationStartup.DEFAULT;</span><br><span class="line">    <span class="built_in">this</span>.resourceLoader = resourceLoader;</span><br><span class="line">    <span class="comment">// 主类为空则抛出异常</span></span><br><span class="line">    Assert.notNull(primarySources, <span class="string">&quot;PrimarySources must not be null&quot;</span>);</span><br><span class="line">    <span class="comment">// 保存启动类信息</span></span><br><span class="line">    <span class="built_in">this</span>.primarySources = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>(Arrays.asList(primarySources));</span><br><span class="line">    <span class="comment">// 根据类路劲判断web应用的类型,分为三种：非web应用(NONE)、基于servlet的web应用(SERVLET)、反应式Web应用(REACTIVE)三种。其判断逻辑就是判断是否存在指定的类，默认是Servlet 环境。</span></span><br><span class="line">    <span class="built_in">this</span>.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">    <span class="comment">// 从 spring.factories 文件中加载 BootstrapRegistryInitializer 实例，并存储到 bootstrapRegistryInitializers 列表中。</span></span><br><span class="line">    <span class="built_in">this</span>.bootstrapRegistryInitializers = <span class="keyword">new</span> <span class="title class_">ArrayList</span>(<span class="built_in">this</span>.getSpringFactoriesInstances(BootstrapRegistryInitializer.class));</span><br><span class="line">    <span class="comment">//并设置为应用的初始化器，从spring.factories 文件中加载</span></span><br><span class="line">	<span class="built_in">this</span>.setInitializers(<span class="built_in">this</span>.getSpringFactoriesInstances(ApplicationContextInitializer.class));</span><br><span class="line">    <span class="comment">// 获取监听器，从spring.factories 文件中加载</span></span><br><span class="line">    <span class="built_in">this</span>.setListeners(<span class="built_in">this</span>.getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">    <span class="comment">// 设置启动类信息</span></span><br><span class="line">    <span class="built_in">this</span>.mainApplicationClass = <span class="built_in">this</span>.deduceMainApplicationClass();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="三、SpringApplication-run"><a href="#三、SpringApplication-run" class="headerlink" title="三、SpringApplication.run()"></a>三、SpringApplication.run()</h2><p>接下来就看看run()方法的流程</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(String... args)</span> &#123;</span><br><span class="line">    <span class="comment">// 记录应用启动的开始时间，用于后续计算启动耗时</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.nanoTime();</span><br><span class="line">    <span class="comment">// 创建DefaultBootstrapContext对象，用于在应用过程中共享一些初始化信息</span></span><br><span class="line">    <span class="type">DefaultBootstrapContext</span> <span class="variable">bootstrapContext</span> <span class="operator">=</span> <span class="built_in">this</span>.createBootstrapContext();</span><br><span class="line">    <span class="type">ConfigurableApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="comment">// 无图形界面</span></span><br><span class="line">    <span class="built_in">this</span>.configureHeadlessProperty();</span><br><span class="line">    <span class="comment">// 1.获取并通知启动监听器</span></span><br><span class="line">    <span class="type">SpringApplicationRunListeners</span> <span class="variable">listeners</span> <span class="operator">=</span> <span class="built_in">this</span>.getRunListeners(args);</span><br><span class="line">    listeners.starting(bootstrapContext, <span class="built_in">this</span>.mainApplicationClass);</span><br><span class="line"></span><br><span class="line">    Throwable ex;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 解析命令行参数</span></span><br><span class="line">        <span class="type">ApplicationArguments</span> <span class="variable">applicationArguments</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultApplicationArguments</span>(args);</span><br><span class="line">        <span class="comment">// 2.准备环境，加载配置文件、设置默认属性</span></span><br><span class="line">        <span class="type">ConfigurableEnvironment</span> <span class="variable">environment</span> <span class="operator">=</span> <span class="built_in">this</span>.prepareEnvironment(listeners, bootstrapContext, applicationArguments);</span><br><span class="line">        <span class="comment">// 配置需要忽略的bean</span></span><br><span class="line">        <span class="built_in">this</span>.configureIgnoreBeanInfo(environment);</span><br><span class="line">        <span class="comment">// 打印banner</span></span><br><span class="line">        <span class="type">Banner</span> <span class="variable">printedBanner</span> <span class="operator">=</span> <span class="built_in">this</span>.printBanner(environment);</span><br><span class="line">        <span class="comment">// 3.创建上下文对象</span></span><br><span class="line">        context = <span class="built_in">this</span>.createApplicationContext();</span><br><span class="line">        <span class="comment">// 4.通过BeanFactory进行启动类非空检测</span></span><br><span class="line">        context.setApplicationStartup(<span class="built_in">this</span>.applicationStartup);</span><br><span class="line">        <span class="comment">// 5.准备上下文</span></span><br><span class="line">        <span class="built_in">this</span>.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);</span><br><span class="line">        <span class="comment">// 6.刷新上下文</span></span><br><span class="line">        <span class="built_in">this</span>.refreshContext(context);</span><br><span class="line">        <span class="comment">// 7.刷新后处理</span></span><br><span class="line">        <span class="built_in">this</span>.afterRefresh(context, applicationArguments);</span><br><span class="line">        <span class="comment">// 计算启动耗时</span></span><br><span class="line">        <span class="type">Duration</span> <span class="variable">timeTakenToStartup</span> <span class="operator">=</span> Duration.ofNanos(System.nanoTime() - startTime);</span><br><span class="line">        <span class="comment">// 记录启动日志</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span>.logStartupInfo) &#123;</span><br><span class="line">            (<span class="keyword">new</span> <span class="title class_">StartupInfoLogger</span>(<span class="built_in">this</span>.mainApplicationClass)).logStarted(<span class="built_in">this</span>.getApplicationLog(), timeTakenToStartup);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通知监听器应用已启动，发送启动结束时间</span></span><br><span class="line">        listeners.started(context, timeTakenToStartup);</span><br><span class="line">        <span class="comment">// 执行所有实现了 CommandLineRunner 和 ApplicationRunner 接口的 Bean</span></span><br><span class="line">        <span class="built_in">this</span>.callRunners(context, applicationArguments);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable var12) &#123;</span><br><span class="line">        ex = var12;</span><br><span class="line">        <span class="built_in">this</span>.handleRunFailure(context, ex, listeners);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(ex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 计算应用准备就绪耗时</span></span><br><span class="line">        <span class="type">Duration</span> <span class="variable">timeTakenToReady</span> <span class="operator">=</span> Duration.ofNanos(System.nanoTime() - startTime);</span><br><span class="line">        <span class="comment">// 通知监听器已准备就绪，发送准备就绪耗时</span></span><br><span class="line">        listeners.ready(context, timeTakenToReady);</span><br><span class="line">        <span class="keyword">return</span> context;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable var11) &#123;</span><br><span class="line">        ex = var11;</span><br><span class="line">        <span class="built_in">this</span>.handleRunFailure(context, ex, (SpringApplicationRunListeners)<span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(ex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面进行具体分析。</p>
-<h2 id="三、run-方法具体流程"><a href="#三、run-方法具体流程" class="headerlink" title="三、run()方法具体流程"></a>三、run()方法具体流程</h2><h3 id="1）获取并启动监听器"><a href="#1）获取并启动监听器" class="headerlink" title="1）获取并启动监听器"></a>1）获取并启动监听器</h3><p>通过<code>SpringApplicationRunListeners listeners = this.getRunListeners(args);</code>来获取监听器，进入<code>getRunListeners</code>方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> SpringApplicationRunListeners <span class="title function_">getRunListeners</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    Class&lt;?&gt;[] types = <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;SpringApplication.class, String[].class&#125;;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">SpringApplicationRunListeners</span>(logger, <span class="built_in">this</span>.getSpringFactoriesInstances(SpringApplicationRunListener.class, types, <span class="built_in">this</span>, args), <span class="built_in">this</span>.applicationStartup);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p>JVM会通过 <code>ACC_SYNCHRONIZED</code> 标记符来实现同步。</p>
+<p><img src="D:\Hexo\source\images\synchronized_ACC.png"></p>
+<p>这里可以看到没有<code>monitor</code>相关指令了，但是在<code>flags</code>中多了一个 <code>ACC_SYNCHRONIZED</code> 标记，这里是一个隐式调用。</p>
+<p>具体来说是当方法被调用时，会检查方法的 <code>ACC_SYNCHRONIZED</code> 访问标记是否被设置，如果设置了就会隐式地利用<code>monitor</code>对象锁，然后调用<code>monitor enter</code> 和 <code>monitor exit</code> 指令来控制方法同步。</p>
 
     
 
@@ -368,7 +320,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spring</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Java, Synchronized</a>
         		</li>
       		
 		</ul>
@@ -378,7 +330,7 @@
 
     
     <p class="article-more-link">
-      <a class="article-more-a" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/">展开全文 >></a>
+      <a class="article-more-a" href="/2025/05/22/Java-%E6%BA%90%E7%A0%81/">展开全文 >></a>
     </p>
     
 
@@ -418,7 +370,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018-2025 <a href="http://example.com/" target="_blank">Mcolin</a>
+    		&copy; 2018-2025 <a href="https://mcolin-crypto.github.io/" target="_blank">Mcolin</a>
     	</div>
       	<div class="footer-right">
 			
@@ -537,7 +489,7 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Spring</a>
+                <a href="javascript:void(0)" class="js-tag color4">Java, Synchronized</a>
               </li>
             
             <div class="clearfix"></div>
