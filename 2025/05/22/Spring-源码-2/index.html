@@ -6,7 +6,7 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Mcolin</title>
+  <title>Spring-源码(2) | Mcolin</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
@@ -25,17 +25,15 @@
     }
   </style>
   
-    
-    <!-- <meta name="keywords" content="">
-    <meta name="description" content="Mcolin的个人博客"> -->
-  
   <meta name="description" content="Mcolin的个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Mcolin">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-源码(2)">
+<meta property="og:url" content="http://example.com/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/index.html">
 <meta property="og:site_name" content="Mcolin">
 <meta property="og:description" content="Mcolin的个人博客">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-22T05:51:08.000Z">
+<meta property="article:modified_time" content="2025-05-22T05:51:08.839Z">
 <meta property="article:author" content="Mcolin">
 <meta name="twitter:card" content="summary">
   
@@ -228,25 +226,25 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-
-  
-    <article id="post-Spring-源码-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Spring-源码-2" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
   
   
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/" target="_blank">Spring-源码(2)</a>
-  
+    <h1 class="article-title" itemprop="name">
+      Spring-源码(2)
     </h1>
   
 
 
   
   
+        
+        <span id="busuanzi_container_page_pv" style='display:none' class="archive-article-date">
+              <i class="icon-smile icon"></i> 阅读数：<span id="busuanzi_value_page_pv"></span>次
+        </span>
+
 <a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/" class="archive-article-date">
         <time datetime="2025-05-22T05:51:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-05-22</time>
 </a>
@@ -254,6 +252,27 @@
   
   
     
+<div style="margin-top:10px;">
+  <span class="post-time">
+    <span class="post-meta-item-icon">
+      <!-- fonts.scss -->
+      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
+      <i class="icon-statistics"></i>
+      <span class="post-meta-item-text"> 字数统计:</span>
+      <span class="post-count">0字</span>
+    </span>
+  </span>
+
+  <span class="post-time">
+    &nbsp; | &nbsp;
+    <span class="post-meta-item-icon">
+      <i class="icon-book icon"></i>
+      <span class="post-meta-item-text"> 阅读时长≈</span>
+      <span class="post-count">1分</span>
+    </span>
+  </span>
+</div>
+
 
   
   </header>
@@ -266,6 +285,26 @@
     
 
     
+    <div class="declare"> 
+      <ul class="post-copyright">
+        <li>
+          <strong>本文作者：</strong>
+          Mcolin
+        </li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="http://example.com/2025/05/22/Spring-源码-2/" title="Spring-源码(2)" target="_blank">http://example.com/2025/05/22/Spring-源码-2/</a>
+        </li>
+        
+        <li>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，均采用 <a href="https://github.com/JoeyBling/hexo-theme-yilia-plus/blob/master/LICENSE" rel="external nofollow" target="_blank">MIT</a> 许可协议。转载请注明出处！
+        </li>
+        
+      </ul>
+    </div>
+    
 
   </div>
   <div class="article-info article-info-index">
@@ -274,16 +313,76 @@
     
 
     
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/">展开全文 >></a>
-    </p>
+
     
+    
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <!-- <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a> -->
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2025/05/22/Spring-%E6%BA%90%E7%A0%81-2/" alt="微信分享二维码"> -->
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
 
     
     <div class="clearfix"></div>
   </div>
   </div>
 </article>
+
+
+<nav id="article-nav">
+  
+  
+    <a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Spring 源码（一）</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -304,111 +403,14 @@
 
 
 
-  
-    <article id="post-Spring-源码-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-  
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" target="_blank">Spring 源码（一）</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" class="archive-article-date">
-        <time datetime="2025-05-22T02:57:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-05-22</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文是针对Springboot中run方法的启动流程的分析。</p>
-<p>下面是一个新建的Springboot项目，直接查看run方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpringdemoApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(SpringdemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、SpringApplication初始化"><a href="#二、SpringApplication初始化" class="headerlink" title="二、SpringApplication初始化"></a>二、SpringApplication初始化</h2><p>这里我们直接看多个主类的run()方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(Class&lt;?&gt;[] primarySources, String[] args)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">new</span> <span class="title class_">SpringApplication</span>(primarySources)).run(args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这个方法接受一个主类数组<code>primarySources</code>和命令行参数<code>args</code>，然后直接创建一个<code>SpringApplication</code>实例，并调用其run方法来启动Spring应用。</p>
-<p>这里先看看<code>SpringApplication</code>的构造函数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">SpringApplication</span><span class="params">(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.sources = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>();</span><br><span class="line">    <span class="built_in">this</span>.bannerMode = Mode.CONSOLE;</span><br><span class="line">    <span class="built_in">this</span>.logStartupInfo = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.addCommandLineProperties = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.addConversionService = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.headless = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.registerShutdownHook = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.additionalProfiles = Collections.emptySet();</span><br><span class="line">    <span class="built_in">this</span>.isCustomEnvironment = <span class="literal">false</span>;</span><br><span class="line">    <span class="built_in">this</span>.lazyInitialization = <span class="literal">false</span>;</span><br><span class="line">    <span class="built_in">this</span>.applicationContextFactory = ApplicationContextFactory.DEFAULT;</span><br><span class="line">    <span class="built_in">this</span>.applicationStartup = ApplicationStartup.DEFAULT;</span><br><span class="line">    <span class="built_in">this</span>.resourceLoader = resourceLoader;</span><br><span class="line">    <span class="comment">// 主类为空则抛出异常</span></span><br><span class="line">    Assert.notNull(primarySources, <span class="string">&quot;PrimarySources must not be null&quot;</span>);</span><br><span class="line">    <span class="comment">// 保存启动类信息</span></span><br><span class="line">    <span class="built_in">this</span>.primarySources = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>(Arrays.asList(primarySources));</span><br><span class="line">    <span class="comment">// 根据类路劲判断web应用的类型,分为三种：非web应用(NONE)、基于servlet的web应用(SERVLET)、反应式Web应用(REACTIVE)三种。其判断逻辑就是判断是否存在指定的类，默认是Servlet 环境。</span></span><br><span class="line">    <span class="built_in">this</span>.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">    <span class="comment">// 从 spring.factories 文件中加载 BootstrapRegistryInitializer 实例，并存储到 bootstrapRegistryInitializers 列表中。</span></span><br><span class="line">    <span class="built_in">this</span>.bootstrapRegistryInitializers = <span class="keyword">new</span> <span class="title class_">ArrayList</span>(<span class="built_in">this</span>.getSpringFactoriesInstances(BootstrapRegistryInitializer.class));</span><br><span class="line">    <span class="comment">//并设置为应用的初始化器，从spring.factories 文件中加载</span></span><br><span class="line">	<span class="built_in">this</span>.setInitializers(<span class="built_in">this</span>.getSpringFactoriesInstances(ApplicationContextInitializer.class));</span><br><span class="line">    <span class="comment">// 获取监听器，从spring.factories 文件中加载</span></span><br><span class="line">    <span class="built_in">this</span>.setListeners(<span class="built_in">this</span>.getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">    <span class="comment">// 设置启动类信息</span></span><br><span class="line">    <span class="built_in">this</span>.mainApplicationClass = <span class="built_in">this</span>.deduceMainApplicationClass();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="三、SpringApplication-run"><a href="#三、SpringApplication-run" class="headerlink" title="三、SpringApplication.run()"></a>三、SpringApplication.run()</h2><p>接下来就看看run()方法的流程</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(String... args)</span> &#123;</span><br><span class="line">    <span class="comment">// 记录应用启动的开始时间，用于后续计算启动耗时</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.nanoTime();</span><br><span class="line">    <span class="comment">// 创建DefaultBootstrapContext对象，用于在应用过程中共享一些初始化信息</span></span><br><span class="line">    <span class="type">DefaultBootstrapContext</span> <span class="variable">bootstrapContext</span> <span class="operator">=</span> <span class="built_in">this</span>.createBootstrapContext();</span><br><span class="line">    <span class="type">ConfigurableApplicationContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="comment">// 无图形界面</span></span><br><span class="line">    <span class="built_in">this</span>.configureHeadlessProperty();</span><br><span class="line">    <span class="comment">// 1.获取并通知启动监听器</span></span><br><span class="line">    <span class="type">SpringApplicationRunListeners</span> <span class="variable">listeners</span> <span class="operator">=</span> <span class="built_in">this</span>.getRunListeners(args);</span><br><span class="line">    listeners.starting(bootstrapContext, <span class="built_in">this</span>.mainApplicationClass);</span><br><span class="line"></span><br><span class="line">    Throwable ex;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 解析命令行参数</span></span><br><span class="line">        <span class="type">ApplicationArguments</span> <span class="variable">applicationArguments</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultApplicationArguments</span>(args);</span><br><span class="line">        <span class="comment">// 2.准备环境，加载配置文件、设置默认属性</span></span><br><span class="line">        <span class="type">ConfigurableEnvironment</span> <span class="variable">environment</span> <span class="operator">=</span> <span class="built_in">this</span>.prepareEnvironment(listeners, bootstrapContext, applicationArguments);</span><br><span class="line">        <span class="comment">// 配置需要忽略的bean</span></span><br><span class="line">        <span class="built_in">this</span>.configureIgnoreBeanInfo(environment);</span><br><span class="line">        <span class="comment">// 打印banner</span></span><br><span class="line">        <span class="type">Banner</span> <span class="variable">printedBanner</span> <span class="operator">=</span> <span class="built_in">this</span>.printBanner(environment);</span><br><span class="line">        <span class="comment">// 3.创建上下文对象</span></span><br><span class="line">        context = <span class="built_in">this</span>.createApplicationContext();</span><br><span class="line">        <span class="comment">// 4.通过BeanFactory进行启动类非空检测</span></span><br><span class="line">        context.setApplicationStartup(<span class="built_in">this</span>.applicationStartup);</span><br><span class="line">        <span class="comment">// 5.准备上下文</span></span><br><span class="line">        <span class="built_in">this</span>.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);</span><br><span class="line">        <span class="comment">// 6.刷新上下文</span></span><br><span class="line">        <span class="built_in">this</span>.refreshContext(context);</span><br><span class="line">        <span class="comment">// 7.刷新后处理</span></span><br><span class="line">        <span class="built_in">this</span>.afterRefresh(context, applicationArguments);</span><br><span class="line">        <span class="comment">// 计算启动耗时</span></span><br><span class="line">        <span class="type">Duration</span> <span class="variable">timeTakenToStartup</span> <span class="operator">=</span> Duration.ofNanos(System.nanoTime() - startTime);</span><br><span class="line">        <span class="comment">// 记录启动日志</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span>.logStartupInfo) &#123;</span><br><span class="line">            (<span class="keyword">new</span> <span class="title class_">StartupInfoLogger</span>(<span class="built_in">this</span>.mainApplicationClass)).logStarted(<span class="built_in">this</span>.getApplicationLog(), timeTakenToStartup);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通知监听器应用已启动，发送启动结束时间</span></span><br><span class="line">        listeners.started(context, timeTakenToStartup);</span><br><span class="line">        <span class="comment">// 执行所有实现了 CommandLineRunner 和 ApplicationRunner 接口的 Bean</span></span><br><span class="line">        <span class="built_in">this</span>.callRunners(context, applicationArguments);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable var12) &#123;</span><br><span class="line">        ex = var12;</span><br><span class="line">        <span class="built_in">this</span>.handleRunFailure(context, ex, listeners);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(ex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 计算应用准备就绪耗时</span></span><br><span class="line">        <span class="type">Duration</span> <span class="variable">timeTakenToReady</span> <span class="operator">=</span> Duration.ofNanos(System.nanoTime() - startTime);</span><br><span class="line">        <span class="comment">// 通知监听器已准备就绪，发送准备就绪耗时</span></span><br><span class="line">        listeners.ready(context, timeTakenToReady);</span><br><span class="line">        <span class="keyword">return</span> context;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable var11) &#123;</span><br><span class="line">        ex = var11;</span><br><span class="line">        <span class="built_in">this</span>.handleRunFailure(context, ex, (SpringApplicationRunListeners)<span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(ex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面进行具体分析。</p>
-<h2 id="三、run-方法具体流程"><a href="#三、run-方法具体流程" class="headerlink" title="三、run()方法具体流程"></a>三、run()方法具体流程</h2><h3 id="1）获取并启动监听器"><a href="#1）获取并启动监听器" class="headerlink" title="1）获取并启动监听器"></a>1）获取并启动监听器</h3><p>通过<code>SpringApplicationRunListeners listeners = this.getRunListeners(args);</code>来获取监听器，进入<code>getRunListeners</code>方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> SpringApplicationRunListeners <span class="title function_">getRunListeners</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    Class&lt;?&gt;[] types = <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;SpringApplication.class, String[].class&#125;;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">SpringApplicationRunListeners</span>(logger, <span class="built_in">this</span>.getSpringFactoriesInstances(SpringApplicationRunListener.class, types, <span class="built_in">this</span>, args), <span class="built_in">this</span>.applicationStartup);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-    
-
-    
-
-    
-
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spring</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-    
-
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
 
 
 
 
-  
-  
+
+
+
+
 
 
           </div>
@@ -448,8 +450,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
