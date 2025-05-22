@@ -290,7 +290,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>JVM会通过<code>monitorenter</code>、<code>monitorexit</code>两个指令来实现同步，使用<code>javap -c -v src/main/java/com/Counter.class</code>反编译代码块：</p>
-<p><img src="D:\Hexo\source\images\synchronized_monitor.png"></p>
+<p><img src="/images%5Csynchronized_monitor.png"></p>
 <p>可以看到两个指令：</p>
 <ul>
 <li><code>monitorenter</code>：表示线程正在尝试获取lock对象的Monitor。</li>
@@ -301,7 +301,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.cnt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>JVM会通过 <code>ACC_SYNCHRONIZED</code> 标记符来实现同步。</p>
-<p><img src="D:\Hexo\source\images\synchronized_ACC.png"></p>
+<p><img src="/images%5Csynchronized_ACC.png"></p>
 <p>这里可以看到没有<code>monitor</code>相关指令了，但是在<code>flags</code>中多了一个 <code>ACC_SYNCHRONIZED</code> 标记，这里是一个隐式调用。</p>
 <p>具体来说是当方法被调用时，会检查方法的 <code>ACC_SYNCHRONIZED</code> 访问标记是否被设置，如果设置了就会隐式地利用<code>monitor</code>对象锁，然后调用<code>monitor enter</code> 和 <code>monitor exit</code> 指令来控制方法同步。</p>
 
