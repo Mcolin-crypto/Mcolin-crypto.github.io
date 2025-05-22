@@ -290,7 +290,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">increment</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>JVM会通过<code>monitorenter</code>、<code>monitorexit</code>两个指令来实现同步，使用<code>javap -c -v src/main/java/com/Counter.class</code>反编译代码块：</p>
-<p><img src="/images%5Csynchronized_monitor.png"></p>
+<p><img src="/synchronized_monitor.png"></p>
 <p>可以看到两个指令：</p>
 <ul>
 <li><code>monitorenter</code>：表示线程正在尝试获取lock对象的Monitor。</li>
@@ -360,7 +360,7 @@
 
 
   
-    <article id="post-Spring-源码-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-spring1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -368,7 +368,7 @@
   
     <h1 itemprop="name">
 	
-	  <a class="article-title" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" target="_blank">Spring 源码（一）：Springboot的启动流程</a>
+	  <a class="article-title" href="/2025/05/22/spring1/" target="_blank">Spring 源码（一）：Springboot的启动流程</a>
   
     </h1>
   
@@ -376,7 +376,7 @@
 
   
   
-<a href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/" class="archive-article-date">
+<a href="/2025/05/22/spring1/" class="archive-article-date">
         <time datetime="2025-05-22T02:57:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-05-22</time>
 </a>
 
@@ -425,7 +425,7 @@
 
 <p>最后封装为<code>SpringApplicationRunListeners</code>。</p>
 <p>需要注意的是<code>getSpringFactoriesInstances</code>方法的返回类型为<code>Collection</code>，listeners表示的是所有监听器的集合，默认状态下只有一个</p>
-<p><img src="D:\Hexo\source\images\默认instance.png"></p>
+<p><img src="/2025/05/22/spring1/%E9%BB%98%E8%AE%A4instance.png"></p>
 <h3 id="2）环境变量的构造"><a href="#2）环境变量的构造" class="headerlink" title="2）环境变量的构造"></a>2）环境变量的构造</h3><p>这一步作用是加载一些配置文件的内容</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ConfigurableEnvironment</span> <span class="variable">environment</span> <span class="operator">=</span> <span class="built_in">this</span>.prepareEnvironment(listeners, bootstrapContext, applicationArguments);</span><br></pre></td></tr></table></figure>
 
@@ -433,7 +433,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ConfigurableEnvironment <span class="title function_">prepareEnvironment</span><span class="params">(SpringApplicationRunListeners listeners, DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取或者创建environment，默认web应用类型是SERVLET，所以这里的获取类型是StandardServletEnvironment</span></span><br><span class="line">    <span class="type">ConfigurableEnvironment</span> <span class="variable">environment</span> <span class="operator">=</span> <span class="built_in">this</span>.getOrCreateEnvironment();</span><br><span class="line">    <span class="comment">// 环境配置</span></span><br><span class="line">    <span class="built_in">this</span>.configureEnvironment((ConfigurableEnvironment)environment, applicationArguments.getSourceArgs());</span><br><span class="line">    ConfigurationPropertySources.attach((Environment)environment);</span><br><span class="line">    <span class="comment">// 发布环境准备事件</span></span><br><span class="line">    listeners.environmentPrepared(bootstrapContext, (ConfigurableEnvironment)environment);</span><br><span class="line">    DefaultPropertiesPropertySource.moveToEnd((ConfigurableEnvironment)environment);</span><br><span class="line">    Assert.state(!((ConfigurableEnvironment)environment).containsProperty(<span class="string">&quot;spring.main.environment-prefix&quot;</span>), <span class="string">&quot;Environment prefix cannot be set via properties.&quot;</span>);</span><br><span class="line">    <span class="built_in">this</span>.bindToSpringApplication((ConfigurableEnvironment)environment);</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">this</span>.isCustomEnvironment) &#123;</span><br><span class="line">        environment = <span class="built_in">this</span>.convertEnvironment((ConfigurableEnvironment)environment);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ConfigurationPropertySources.attach((Environment)environment);</span><br><span class="line">    <span class="keyword">return</span> (ConfigurableEnvironment)environment;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="application-yml的加载"><a href="#application-yml的加载" class="headerlink" title="application.yml的加载"></a>application.yml的加载</h4><p>在<code>listeners.environmentPrepared(bootstrapContext, (ConfigurableEnvironment)environment);</code>时会发布环境准备事件，要通知6个监视器如下图。对于配置文件application.yml或者application.properties文件实际上是通过发布环境准备事件完成的，完成这项功能的是<code>EnvironmentPostProcessorApplicationListener</code>。</p>
-<p><img src="D:\Hexo\source\images\listeners.png"></p>
+<p><img src="/2025/05/22/spring1/listeners.png"></p>
 <p>监听器会去加载spring.factories配置文件中的“环境配置后处理器”<code>EnvironmentPostProcessor</code>。</p>
 <p>查看<code>EnvironmentPostProcessorApplicationListener</code>的<code>onApplicationEvent</code>方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onApplicationEvent</span><span class="params">(ApplicationEvent event)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (event <span class="keyword">instanceof</span> ApplicationEnvironmentPreparedEvent) &#123;</span><br><span class="line">        <span class="built_in">this</span>.onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent)event);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (event <span class="keyword">instanceof</span> ApplicationPreparedEvent) &#123;</span><br><span class="line">        <span class="built_in">this</span>.onApplicationPreparedEvent();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (event <span class="keyword">instanceof</span> ApplicationFailedEvent) &#123;</span><br><span class="line">        <span class="built_in">this</span>.onApplicationFailedEvent();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -469,7 +469,7 @@
 
     
     <p class="article-more-link">
-      <a class="article-more-a" href="/2025/05/22/Spring-%E6%BA%90%E7%A0%81-1/">展开全文 >></a>
+      <a class="article-more-a" href="/2025/05/22/spring1/">展开全文 >></a>
     </p>
     
 
