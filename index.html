@@ -304,7 +304,99 @@
 <p><img src="/2025/05/22/synchronized/synchronized_ACC.png"></p>
 <p>这里可以看到没有<code>monitor</code>相关指令了，但是在<code>flags</code>中多了一个 <code>ACC_SYNCHRONIZED</code> 标记，这里是一个隐式调用。</p>
 <p>具体来说是当方法被调用时，会检查方法的 <code>ACC_SYNCHRONIZED</code> 访问标记是否被设置，如果设置了就会隐式地利用<code>monitor</code>对象锁，然后调用<code>monitor enter</code> 和 <code>monitor exit</code> 指令来控制方法同步。</p>
+<h2 id="三、锁的升级过程"><a href="#三、锁的升级过程" class="headerlink" title="三、锁的升级过程"></a>三、锁的升级过程</h2><p>这里我们先了解一下Java对象的组成，在HotSpot虚拟机中，堆中对象实例由三部分组成：</p>
+<ul>
+<li>对象头：<ul>
+<li>Mark Word：这部分用于存储对象自身的运行时数据，包括哈希码、GC分代年龄、锁状态标志等。在32位JVM中，Mark Word的长度是32位，在64位JVM中长度是64位。</li>
+<li>类型指针：指向当前对象所属类的元数据指针，指向元空间</li>
+<li>数组长度：如果对象是一个数组，那么在对象头中还会有一个部分用来记录数组的长度。这部分数据在32位和64位JVM中长度都是32位</li>
+</ul>
+</li>
+<li>实例对象：对象真正存储的数据</li>
+<li>对齐填充：无实际意义，HotSpot虚拟机规定对象必须占用8字节整数倍的内存，实例数据未占够时用于补位。</li>
+</ul>
+<p>Mark Word的详细结构如下：</p>
+<p>~~</p>
+<h3 id="1）-无锁状态"><a href="#1）-无锁状态" class="headerlink" title="1） 无锁状态"></a>1） 无锁状态</h3><p>关闭指针压缩后：</p>
+<p><img src="/2025/05/22/synchronized/unlock_after.png"></p>
+<p>可以看到前8个字节就是对象的Mark Word，后面8个字节就是对象的类型指针。</p>
+<p>然而在Mark Word的结构图中可以看到有一部分是对象的hashCode，但是打印出来的结果中却只有一个bit位为1，这里面显然是没有hashCode的。原因是<code>Object#hashCode()</code>是一个native方法，调用之后，对象头才会有hashCode值。</p>
+<p>调入<code>lock.hashCode()</code>方法后，结果如下：</p>
+<p><img src="/2025/05/22/synchronized/unlock_hashcode.png"></p>
+<p>现在可以看到Mark Word中已经包含了对象的hashCode了。图中红框中第一个字节<code>0</code>表示并未应用偏向锁，结合后两个字节<code>01</code>锁标志代表无锁态。</p>
+<h3 id="2）-偏向锁"><a href="#2）-偏向锁" class="headerlink" title="2） 偏向锁"></a>2） 偏向锁</h3><p>接下来我们给object加上synchronized关键字上锁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 偏向锁</span></span><br><span class="line"><span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;================ 偏向锁 ================&quot;</span>);</span><br><span class="line">    System.out.println(ClassLayout.parseInstance(object).toPrintable());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>控制台输出如下：</p>
+<p><img src="/2025/05/22/synchronized/undelay_pxlock.png"></p>
+<p>奇怪的是明明没有其他线程为什么这里标志位显示的却是轻量级锁，这是因为系统刚刚启动时，一般数据竞争时比较激烈的，此时启用偏向锁会降低性能。</p>
+<p>通过<code>java -XX:+PrintFlagsFinal -version</code>指令可以查看到：</p>
+<p><img src="/2025/05/22/synchronized/delay.png"></p>
+<p><code>BiasedLockingStartupDelay</code>表示系统启动几秒钟后启用偏向锁，单位为毫秒，默认设置为4000ms。</p>
+<p>因此可以延时5秒，确保JVM启用了偏向锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 延迟5秒，确保JVM启用了偏向锁</span></span><br><span class="line">Thread.sleep(<span class="number">5000</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">Object</span> <span class="variable">object</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 偏向锁</span></span><br><span class="line"><span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;================ 偏向锁 ================&quot;</span>);</span><br><span class="line">    System.out.println(ClassLayout.parseInstance(object).toPrintable());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<p><img src="/2025/05/22/synchronized/pianxiang_lock.png"></p>
+<p>这一次的输出结果表示偏向锁被正确获得了，后面的带有main函数的线程id。</p>
+<h5 id="2-1-偏向锁加锁过程"><a href="#2-1-偏向锁加锁过程" class="headerlink" title="2.1 偏向锁加锁过程"></a>2.1 偏向锁加锁过程</h5><p>当一个线程首次访问同步代码时，如果此对象处于无锁状态且偏向锁未被禁用，JVM 会利用CAS将该对象头的锁标记改为偏向锁状态，并记录当前线程 ID。当线程再次获取锁时，则检查此时Mark Word中存储的线程ID是否与当前线程一致：</p>
+<ul>
+<li><p>线程ID相等：直接放行，线程再次持有同一把锁，实现可重入。</p>
+</li>
+<li><p>线程ID不相等：该锁已偏向于其他线程，CAS尝试获取锁，成功则锁偏向给新的线程，失败则需撤销偏向锁，升级为轻量级锁。</p>
+</li>
+</ul>
+<h5 id="2-2-偏向锁释放过程"><a href="#2-2-偏向锁释放过程" class="headerlink" title="2.2 偏向锁释放过程"></a>2.2 偏向锁释放过程</h5><p>偏向锁撤销代表当前已经发生了线程竞争，需要将偏向锁升级为轻量级锁，大致过程如下：</p>
+<ol>
+<li>当竞争线程CAS获取偏向锁失败，则会等待一个全局安全点（即代码没有在执行）</li>
+<li>到达全局安全点时，会将当前持有偏向锁的线程挂起，同时将偏向锁升级为轻量级锁</li>
+<li>之后恢复阻塞在安全点的原线程，继续执行该线程任务</li>
+</ol>
+<p>其实在这种两个线程竞争的情况下，偏向锁撤销带来的性能开销是比较大的，只有在大量无竞争的情况下，偏向锁才有优势，因此在JDK 15已经废弃了偏向锁</p>
+<p>补充：匿名偏向锁</p>
+<p><img src="/noname.png"></p>
+<p>在JDK 8中，即使我们没有加<code>synchronized</code>锁，但对象头中Mark Word锁状态依然为<code>101</code>偏向锁，但其线程ID为空，未指向任何线程，因此匿名偏向锁可以称为无锁的可偏向状态</p>
+<h3 id="3）-轻量级锁"><a href="#3）-轻量级锁" class="headerlink" title="3） 轻量级锁"></a>3） 轻量级锁</h3><p>这里我们新建一个线程来触发升级过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 触发偏向锁升级为轻量级锁</span></span><br><span class="line"><span class="type">Thread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;================ 轻量级锁 ================&quot;</span>);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(object).toPrintable());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">thread.start();</span><br><span class="line">thread.join();</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<p><img src="/2025/05/22/synchronized/light_lock.png"></p>
+<p>图中红框中第一个字节<code>0</code>表示非偏向锁，结合后两个字节<code>00</code>锁标志代表轻量级锁。可以看到偏向锁升级成为了轻量级锁。</p>
+<h5 id="3-1-轻量级锁加锁过程"><a href="#3-1-轻量级锁加锁过程" class="headerlink" title="3.1 轻量级锁加锁过程"></a>3.1 轻量级锁加锁过程</h5><p>当多个线程在不同时间段获取同一把锁时，JVM会采用轻量级锁来避免线程阻塞。未持有锁的线程通过CAS自旋来等待锁的释放。</p>
+<p>轻量级锁加锁之前，JVM虚拟机会在当前线程的栈帧中开辟一块内存空间<code>Lock Record</code>（锁记录），其中包含两个属性：</p>
+<ul>
+<li><code>_displaced_header</code>：存储对象头<code>Mark Word</code>的拷贝</li>
+<li><code>Owner</code>：指向锁对象</li>
+</ul>
+<p>当线程进入<code>synchronized</code>加锁的代码时，如果对象的锁状态为偏向锁，就会把是否偏向锁的标记位置0，然后在线程栈帧中创建锁记录<code>Lock Record</code>，将对象的<code>Mark Word</code>复制到锁记录中的<code>_displaced_header</code>属性，接着采用CAS自旋的方式，尝试将<code>Mark Word</code>中的内容替换为指向<code>Lock Record</code>的指针，并且将<code>Lock Record</code>中的<code>owner</code>指针指向对象的<code>Mark Word</code>。</p>
+<ul>
+<li><p>如果替换动作成功，线程就持有了该对象的锁，<code>Mark Word</code>中的锁标志位就会更新为<code>00</code>，表示对象处于轻量级锁状态。</p>
+</li>
+<li><p>如果替换失败，首先会检查对象的<code>Mark Word</code>是否已经指向该线程了，如果是则代表该线程已经拿到锁，将<code>Lock Record</code>中的<code>_displaced_header</code>设置为<code>null</code>，记录线程重入锁；若对象头中的<code>Mark Word</code>不是指向该线程，则代表当前多个线程在竞争。</p>
+</li>
+<li><p>若竞争不激烈，则该线程会通过CAS自旋不断重试，等待占用锁的线程释放锁，当自旋超过一定次数（竞争激烈），轻量级锁就会升级为重量级锁。</p>
+</li>
+</ul>
+<h5 id="3-2-轻量级锁释放过程"><a href="#3-2-轻量级锁释放过程" class="headerlink" title="3.2 轻量级锁释放过程"></a>3.2 轻量级锁释放过程</h5><p>轻量级锁释放比较简单，通过CAS将栈帧锁记录中的<code>_displaced_header</code>属性复制到对象的<code>Mark Word</code>中，然后移除<code>Owner</code>属性的指向，若更新成功，则代表轻量级锁释放成功。</p>
+<h3 id="4）-重量级锁"><a href="#4）-重量级锁" class="headerlink" title="4） 重量级锁"></a>4） 重量级锁</h3><p>当竞争更加激烈时，轻量级锁会升级为重量级锁，这里通过再次新建线程并让线程1保持锁一段时间，然后让线程2尝试获取锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 重量级锁</span></span><br><span class="line"><span class="type">Thread</span> <span class="variable">thread1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">2000</span>); <span class="comment">// 保持锁一段时间</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">thread1.start();</span><br><span class="line">Thread.sleep(<span class="number">500</span>); <span class="comment">// 确保线程1先获取锁</span></span><br><span class="line"></span><br><span class="line"><span class="type">Thread</span> <span class="variable">thread2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;================ 重量级锁 ================&quot;</span>);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(object).toPrintable());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">thread2.start();</span><br><span class="line">thread1.join();</span><br><span class="line">thread2.join();</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<p><img src="/2025/05/22/synchronized/heavy_lock.png"></p>
+<p>图中红框中第一个字节<code>0</code>表示非偏向锁，结合后两个字节<code>10</code>锁标志代表重量级锁。可以看到锁竞争变得激烈时，轻量级锁升级成为重量级锁。</p>
+<p>如果自旋超过了一定的次数，或者一个线程持有锁，一个自旋，又有第三个线程进入加锁代码，轻量级锁就会升级为重量级锁。此时，对象头的锁类型会更新为<code>10</code>，Mark Word会存储指向Monitor对象的指针，其他等待锁的线程都会进入阻塞状态。</p>
+<p>在JDK6之前，<code>synchronized</code>锁就是重量级锁，而从JDK 6开始，<code>synchronized</code>重量级锁是由偏向锁、轻量级锁升级而来的。当升级为重量级锁时，锁对象会与一个<code>Monitor</code>对象关联，对象头中的Mark Word保存指向<code>Monitor</code>对象的指针。</p>
+<p>在Hotspot虚拟机中，<code>Monitor</code>由<code>ObjectMonitor </code>实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ObjectMonitor() &#123;</span><br><span class="line">    _count        = <span class="number">0</span>;</span><br><span class="line">    _owner        = NULL;</span><br><span class="line">    _WaitSet      = NULL;</span><br><span class="line">    _cxq          = NULL ;</span><br><span class="line">    _EntryList    = NULL ;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>_count </code>：记录该线程获取锁的次数，持有则计数器+1，释放时-1；</li>
+<li><code>_owner</code>：当前持有 <code>ObjectMonitor</code> 的线程，初始值为<code>null</code>，表示没有线程持有锁。线程成功获取锁后，该值更新为线程 ID，释放锁后重置为<code>null</code>。</li>
+<li><code>_WaitSet</code>：等待队列，存放调用 <code>wait()</code> 方法的线程，线程进入WAITING状态，等待<code>notify()</code>唤醒。</li>
+<li><code>_cxq</code>：竞争队列，表示所有正在争夺锁但尚未进入<code>_EntryList</code>的线程队列。</li>
+<li><code>_EntryList</code>：入口队列，当持有锁的线程释放锁后，<code>_cxq</code>竞争队列中有资格获取锁的线程会被移动到这里，表示已经准备好尝试获取锁的线程队列。</li>
+</ul>
+<h2 id="补充：synchronized和ReentrantLock的区别"><a href="#补充：synchronized和ReentrantLock的区别" class="headerlink" title="补充：synchronized和ReentrantLock的区别"></a>补充：synchronized和ReentrantLock的区别</h2>
     
 
     
